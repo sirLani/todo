@@ -1,21 +1,61 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
+import React, { useState } from "react";
+import {
+  Button,
+  FlatList,
+  StyleSheet,
+  View,
+} from "react-native";
+import GoalInput from "./components/GoalInput";
+import GoalItem from "./components/GoalItem";
 
 export default function App() {
+  const [courseGoals, setCourseGoals] = useState([]);
+ const [isAddModal, setIsAddModal] = useState(false)
+
+   
+  const addEnteredGoal = (goalEntered) => {
+    setCourseGoals(currentGoals => [
+      ...currentGoals,
+      { id: Math.random().toString(), value: goalEntered },
+    ]);
+
+    setIsAddModal(false)
+  };
+
+  const removeGoal = (goalId) =>{ 
+      setCourseGoals(currentGoals=>{
+       return currentGoals.filter((goal) => goal.id !== goalId)
+      })
+  }
+
+  const onCancel =() =>{
+    setIsAddModal(false)
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View style={styles.screen}>
+    <Button title= "Add Goal" onPress={() => setIsAddModal(true)}/>
+     <GoalInput visible={isAddModal} onAddGoal={addEnteredGoal} cancel={onCancel}/>
+      <FlatList
+        keyExtractor={(item, index) => item.id}
+        data={courseGoals}
+        renderItem={(items) => (
+         <GoalItem
+           text= {items.item.value}
+           id= {items.item.id}
+           delete ={removeGoal}
+         />
+        )}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+  screen: {
+    padding: 50,
   },
+ 
+
 });
